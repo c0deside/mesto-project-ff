@@ -1,13 +1,15 @@
 import '../pages/index.css';
 import { createCard, likeCard, removeCard } from './card';
 import { initialCards } from './cards';
-import { closeModal, openEditProfileModal, openImageModal, openModal } from './modal';
+import { closeModal, openModal } from './modal';
 
 // Popups
 
 const editProfilePopup = document.querySelector('.popup_type_edit');
 const addPlacePopup = document.querySelector('.popup_type_new-card');
 const placePopup = document.querySelector('.popup_type_image');
+const placePopupImage = placePopup.querySelector('.popup__image');
+const placePopupCaption = placePopup.querySelector('.popup__caption');
 
 // Profile Editing
 
@@ -33,6 +35,27 @@ const { 'place-name': placeNameInput, link: placeLinkInput } = addPlaceForm.elem
 
 const placesList = document.querySelector('.places__list');
 const cards = initialCards.map(({ name, link }) => createCard(name, link, removeCard, likeCard, openImageModal, placePopup));
+
+function openImageModal(popup, link, caption) {
+  fulfillImagePopup(link, caption);
+  openModal(popup);
+}
+
+function openEditProfileModal(popup, name, job) {
+  fulfillEditProfilePopup(name, job);
+  openModal(popup);
+}
+
+function fulfillImagePopup(link, caption) {
+  placePopupImage.src = link;
+  placePopupImage.alt = caption;
+  placePopupCaption.textContent = caption;
+}
+
+function fulfillEditProfilePopup(name, job) {
+  profileNameInput.value = name;
+  profileJobInput.value = job;
+}
 
 function addPlace(name, link) {
   const place = createCard(name, link, removeCard, likeCard, openImageModal, placePopup);
