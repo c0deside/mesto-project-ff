@@ -240,6 +240,10 @@ function addPlace(card) {
 }
 
 function fulfillCards(initialCards, userId) {
+  if (initialCards == null || !Array.isArray(initialCards)) {
+    return;
+  }
+
   const cards = initialCards.map(card =>
     createCard(
       card,
