@@ -173,7 +173,6 @@ async function submitDeletePlaceForm(evt) {
 
   const result = await api.deleteCard(deletingCard._id);
   if (result) {
-    console.log(result);
     removeCardElement(deletingCard);
   }
 
