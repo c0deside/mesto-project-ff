@@ -35,13 +35,13 @@ const profileAddButton = document.querySelector('.profile__add-button');
 
 let user = {};
 const profileName = document.querySelector('.profile__title');
-const profileJob = document.querySelector('.profile__description');
+const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
 
 // Edit Profile Form
 
 const editProfileForm = document.forms['edit-profile'];
-const { name: profileNameInput, description: profileJobInput } = editProfileForm.elements;
+const { name: profileNameInput, description: profileDescriptionInput } = editProfileForm.elements;
 const editProfileSubmitButton = editProfileForm.querySelector(submitButtonSelector);
 
 // Edit Avatar Form
@@ -71,8 +71,18 @@ const placesList = document.querySelector('.places__list');
 const validationConfig = { formSelector, inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass };
 const validationClearingConfig = { inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass };
 
+// Avatar Helpers
+
+const CSS_URL_PREFIX = 'url("';
+const CSS_URL_SUFFIX = '")';
+
+function getAvatarUrl(avatarElement) {
+  const backgroundImage = avatarElement.style.backgroundImage;
+  return backgroundImage.slice(CSS_URL_PREFIX.length, -CSS_URL_SUFFIX.length);
+}
+
 function openImageModal(popup, link, caption) {
-  fulfillImagePopup(link, caption);
+  fillImagePopup(link, caption);
   openModal(popup);
 }
 
@@ -99,7 +109,7 @@ function openDeleteConfirmationModal(card) {
   openModal(deleteConfirmationPopup);
 }
 
-function fulfillImagePopup(link, caption) {
+function fillImagePopup(link, caption) {
   placePopupImage.src = link;
   placePopupImage.alt = caption;
   placePopupCaption.textContent = caption;
@@ -107,22 +117,18 @@ function fulfillImagePopup(link, caption) {
 
 function fulfillEditProfilePopup(name, job) {
   profileNameInput.value = name;
-  profileJobInput.value = job;
+  profileDescriptionInput.value = job;
 }
 
 function fulfillEditAvatarPopup(link) {
   avatarLinkInput.value = link;
 }
 
-function getAvatarUrl(avatarElement) {
-  return avatarElement.style.backgroundImage.slice(5, -2);
-}
-
 async function submitEditProfileForm(evt) {
   evt.preventDefault();
   setSubmitButtonLoadingState(editProfileSubmitButton);
 
-  const user = await api.patchUser({ name: profileNameInput.value, about: profileJobInput.value });
+  const user = await api.patchUser({ name: profileNameInput.value, about: profileDescriptionInput.value });
   if (user) {
     fulfillProfile(user);
   }
@@ -198,10 +204,14 @@ async function toggleCardLike(card) {
 }
 
 function fulfillProfile(data) {
+  if (data == null) {
+    return;
+  }
+
   user = data;
   const { name, about, avatar } = data;
   profileName.textContent = name;
-  profileJob.textContent = about;
+  profileDescription.textContent = about;
   profileImage.style.backgroundImage = `url(${avatar})`;
 }
 
@@ -225,7 +235,9 @@ function fulfillCards(initialCards, userId) {
   placesList.append(...cards);
 }
 
-profileEditButton.addEventListener('click', () => openEditProfileModal(editProfilePopup, profileName.textContent, profileJob.textContent));
+profileEditButton.addEventListener('click', () =>
+  openEditProfileModal(editProfilePopup, profileName.textContent, profileDescription.textContent),
+);
 profileAddButton.addEventListener('click', () => openAddPlaceModal(addPlacePopup));
 profileImage.addEventListener('click', () => openEditAvatarModal(editAvatarPopup, getAvatarUrl(profileImage)));
 

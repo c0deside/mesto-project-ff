@@ -1,6 +1,7 @@
+const template = document.querySelector('#card-template').content;
+
 export function createCard(data, removable, remove, likeCard, openImageModal, imageModal, liked) {
   const { name, link, likes, _id } = data;
-  const template = document.querySelector('#card-template').content;
   const card = template.querySelector('.card').cloneNode(true);
 
   const image = card.querySelector('.card__image');

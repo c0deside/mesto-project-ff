@@ -6,8 +6,8 @@ export function enableValidation(config) {
 
 export function clearValidation(formElement, config) {
   const { inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass } = config;
-  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
-  inputList.forEach(inputElement => hideInputError(formElement, inputElement, inputErrorClass, errorClass));
+  const inputs = Array.from(formElement.querySelectorAll(inputSelector));
+  inputs.forEach(inputElement => hideInputError(formElement, inputElement, inputErrorClass, errorClass));
 
   const buttonElement = formElement.querySelector(submitButtonSelector);
   disableButton(buttonElement, inactiveButtonClass);
@@ -31,29 +31,29 @@ function hideInputError(formElement, inputElement, inputErrorClass, errorClass) 
 
 function enableFormValidation(formElement, config) {
   const { inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass } = config;
-  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
+  const inputs = Array.from(formElement.querySelectorAll(inputSelector));
   const buttonElement = formElement.querySelector(submitButtonSelector);
 
-  checkButtonAvailability(inputList, buttonElement, inactiveButtonClass);
+  checkButtonAvailability(inputs, buttonElement, inactiveButtonClass);
 
-  inputList.forEach(inputElement =>
+  inputs.forEach(inputElement =>
     inputElement.addEventListener('input', () => {
       checkInputValidity(formElement, inputElement, inputErrorClass, errorClass);
-      checkButtonAvailability(inputList, buttonElement, inactiveButtonClass);
+      checkButtonAvailability(inputs, buttonElement, inactiveButtonClass);
     }),
   );
 }
 
-function checkButtonAvailability(inputList, buttonElement, inactiveButtonClass) {
-  if (hasInvalidInput(inputList)) {
+function checkButtonAvailability(inputs, buttonElement, inactiveButtonClass) {
+  if (hasInvalidInput(inputs)) {
     disableButton(buttonElement, inactiveButtonClass);
   } else {
     enableButton(buttonElement, inactiveButtonClass);
   }
 }
 
-function hasInvalidInput(inputList) {
-  return inputList.some(inputElement => !inputElement.validity.valid);
+function hasInvalidInput(inputs) {
+  return inputs.some(inputElement => !inputElement.validity.valid);
 }
 
 function disableButton(buttonElement, inactiveButtonClass) {
