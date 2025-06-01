@@ -128,13 +128,15 @@ async function submitEditProfileForm(evt) {
   evt.preventDefault();
   setSubmitButtonLoadingState(editProfileSubmitButton);
 
-  const user = await api.patchUser({ name: profileNameInput.value, about: profileDescriptionInput.value });
-  if (user) {
+  try {
+    const user = await api.patchUser({ name: profileNameInput.value, about: profileDescriptionInput.value });
     fulfillProfile(user);
+  } catch (err) {
+    console.error(`${err.message}. Не удалось обновить данные пользователя`);
+  } finally {
+    closeModal(editProfilePopup);
+    setSubmitButtonDefaultState(editProfileSubmitButton);
   }
-
-  setSubmitButtonDefaultState(editProfileSubmitButton);
-  closeModal(editProfilePopup);
 }
 
 async function submitEditAvatarForm(evt) {
@@ -150,40 +152,53 @@ async function submitEditAvatarForm(evt) {
   }
 
   avatarLinkInput.setCustomValidity('');
-  const user = await api.changeUserAvatar({ avatar: avatarLinkInput.value });
-  if (user) {
-    profileImage.style.backgroundImage = `url(${user.avatar})`;
-  }
 
-  closeModal(editAvatarPopup);
-  setSubmitButtonDefaultState(editAvatarSubmitButton);
+  try {
+    const user = await api.changeUserAvatar({ avatar: avatarLinkInput.value });
+    if (user?.avatar) {
+      profileImage.style.backgroundImage = `url(${user.avatar})`;
+    }
+  } catch (err) {
+    console.error(`${err.message}. Не удалось обновить аватар пользователя`);
+  } finally {
+    closeModal(editAvatarPopup);
+    setSubmitButtonDefaultState(editAvatarSubmitButton);
+  }
 }
 
 async function submitAddPlaceForm(evt) {
   evt.preventDefault();
   setSubmitButtonLoadingState(addPlaceSubmitButton);
 
-  const card = await api.saveCard({ name: placeNameInput.value, link: placeLinkInput.value });
-  if (card) {
-    addPlace(card);
+  try {
+    const card = await api.saveCard({ name: placeNameInput.value, link: placeLinkInput.value });
+    if (card != null) {
+      addPlace(card);
+    }
+  } catch (err) {
+    console.error(`${err.message}. Не удалось добавить карточку`);
+  } finally {
+    closeModal(addPlacePopup);
+    setSubmitButtonDefaultState(addPlaceSubmitButton);
+    addPlaceForm.reset();
   }
-
-  closeModal(addPlacePopup);
-  setSubmitButtonDefaultState(addPlaceSubmitButton);
-  addPlaceForm.reset();
 }
 
 async function submitDeletePlaceForm(evt) {
   evt.preventDefault();
   setSubmitButtonLoadingState(deleteConfirmationButton, 'Удаление…');
 
-  const result = await api.deleteCard(deletingCard._id);
-  if (result) {
-    removeCardElement(deletingCard);
+  try {
+    const result = await api.deleteCard(deletingCard._id);
+    if (result) {
+      removeCardElement(deletingCard);
+    }
+  } catch (err) {
+    console.error(`${err.message}. Не удалось удалить карточку`);
+  } finally {
+    closeModal(deleteConfirmationPopup);
+    setSubmitButtonDefaultState(deleteConfirmationButton, 'Да');
   }
-
-  closeModal(deleteConfirmationPopup);
-  setSubmitButtonDefaultState(deleteConfirmationButton, 'Да');
 }
 
 function setSubmitButtonLoadingState(button, text = 'Сохранение…') {
@@ -197,9 +212,13 @@ function setSubmitButtonDefaultState(button, text = 'Сохранить') {
 async function toggleCardLike(card) {
   const toggleLike = card.liked ? api.deleteCardLike : api.saveCardLike;
 
-  const updated = await toggleLike(card._id);
-  if (updated) {
-    checkCardLike(card, { ...updated, liked: !card.liked });
+  try {
+    const updated = await toggleLike(card._id);
+    if (updated != null) {
+      checkCardLike(card, { ...updated, liked: !card.liked });
+    }
+  } catch (err) {
+    console.error(`${err.message}. Не удалось обработать лайк`);
   }
 }
 
@@ -248,6 +267,10 @@ deleteConfirmationForm.addEventListener('submit', submitDeletePlaceForm);
 
 enableValidation(validationConfig);
 
-const [initialUser, initialCards] = await Promise.all([api.getUser(), api.getInitialCards()]);
-fulfillProfile(initialUser);
-fulfillCards(initialCards, user._id);
+try {
+  const [initialUser, initialCards] = await Promise.all([api.getUser(), api.getInitialCards()]);
+  fulfillProfile(initialUser);
+  fulfillCards(initialCards, user._id);
+} catch (err) {
+  console.error(`${err.message}. Не удалось получить пользователя и список карточек`);
+}

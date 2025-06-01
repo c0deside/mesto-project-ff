@@ -22,9 +22,8 @@ export function changeUserAvatar(avatar) {
 
 // Cards
 
-export async function getInitialCards() {
-  const result = await sendApiRequest('cards');
-  return result ?? [];
+export function getInitialCards() {
+  return sendApiRequest('cards');
 }
 
 export function saveCard(card) {
@@ -67,14 +66,10 @@ async function sendApiRequest(path, method = 'GET', body) {
     options.body = JSON.stringify(body);
   }
 
-  try {
-    const res = await fetch(`${requestConfig.baseUrl}/${path}`, options);
-    if (res.ok) {
-      return res.json();
-    }
-
-    throw new Error(`Статус ответа ${res.status}`);
-  } catch (err) {
-    console.error(`${err.message}. Запрос ${path} не удался`);
+  const res = await fetch(`${requestConfig.baseUrl}/${path}`, options);
+  if (res.ok) {
+    return res.json();
   }
+
+  throw new Error(`Статус ответа ${res.status}`);
 }

@@ -12,7 +12,6 @@ export function closeModal(popup) {
 
 function toggleModalVisibility(popup) {
   popup.classList.toggle('popup_is-opened');
-  popup.classList.toggle('popup_is-animated');
 }
 
 function closeModalOnClick(evt) {
