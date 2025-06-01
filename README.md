@@ -1,5 +1,9 @@
 # Проектная работа Mesto
 
+## Ссылка на опубликованный проект
+
+https://c0deside.github.io/mesto-project-ff
+
 ## Ссылка не репозиторий
 
 https://github.com/c0deside/mesto-project-ff
