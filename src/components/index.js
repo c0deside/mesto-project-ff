@@ -131,10 +131,10 @@ async function submitEditProfileForm(evt) {
   try {
     const user = await api.patchUser({ name: profileNameInput.value, about: profileDescriptionInput.value });
     fulfillProfile(user);
+    closeModal(editProfilePopup);
   } catch (err) {
     console.error(`${err.message}. Не удалось обновить данные пользователя`);
   } finally {
-    closeModal(editProfilePopup);
     setSubmitButtonDefaultState(editProfileSubmitButton);
   }
 }
@@ -157,11 +157,11 @@ async function submitEditAvatarForm(evt) {
     const user = await api.changeUserAvatar({ avatar: avatarLinkInput.value });
     if (user?.avatar) {
       profileImage.style.backgroundImage = `url(${user.avatar})`;
+      closeModal(editAvatarPopup);
     }
   } catch (err) {
     console.error(`${err.message}. Не удалось обновить аватар пользователя`);
   } finally {
-    closeModal(editAvatarPopup);
     setSubmitButtonDefaultState(editAvatarSubmitButton);
   }
 }
@@ -174,13 +174,13 @@ async function submitAddPlaceForm(evt) {
     const card = await api.saveCard({ name: placeNameInput.value, link: placeLinkInput.value });
     if (card != null) {
       addPlace(card);
+      closeModal(addPlacePopup);
+      addPlaceForm.reset();
     }
   } catch (err) {
     console.error(`${err.message}. Не удалось добавить карточку`);
   } finally {
-    closeModal(addPlacePopup);
     setSubmitButtonDefaultState(addPlaceSubmitButton);
-    addPlaceForm.reset();
   }
 }
 
@@ -192,11 +192,11 @@ async function submitDeletePlaceForm(evt) {
     const result = await api.deleteCard(deletingCard._id);
     if (result) {
       removeCardElement(deletingCard);
+      closeModal(deleteConfirmationPopup);
     }
   } catch (err) {
     console.error(`${err.message}. Не удалось удалить карточку`);
   } finally {
-    closeModal(deleteConfirmationPopup);
     setSubmitButtonDefaultState(deleteConfirmationButton, 'Да');
   }
 }
